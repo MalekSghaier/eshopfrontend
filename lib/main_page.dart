@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:eshopfrontend/cart.dart';
 import 'package:eshopfrontend/product.dart';
 import 'package:eshopfrontend/api_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  final Cart cart;
+
+  const MainPage({Key? key, required this.cart}) : super(key: key);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -19,7 +22,6 @@ class _MainPageState extends State<MainPage> {
   int pageNumber = 0;
   final int pageSize = 20;
   Map<int, int> quantities = {};
-  final Cart cart = Cart();
 
   ScrollController _scrollController = ScrollController();
   TextEditingController _searchController = TextEditingController();
@@ -31,6 +33,8 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     _scrollController.addListener(_scrollListener);
     getData();
+    widget.cart.loadFromLocal();
+    _updateCartNotification();
   }
 
   @override
@@ -69,7 +73,7 @@ class _MainPageState extends State<MainPage> {
         print("Product ID: ${product.id}, Image URL: ${product.imageUrl}");
       });
     } catch (e) {
-      // Gérer les erreurs
+      // Handle errors
     } finally {
       setState(() {
         isLoading = false;
@@ -103,7 +107,22 @@ class _MainPageState extends State<MainPage> {
 
   void addToCart(Product product, int quantity) {
     setState(() {
-      cart.addProduct(product, quantity);
+      widget.cart.addProduct(product, quantity);
+      _updateCartNotification();
+    });
+  }
+
+  void removeFromCart(Product product) {
+    setState(() {
+      widget.cart.removeProduct(product);
+      _updateCartNotification();
+    });
+  }
+
+  void _updateCartNotification() {
+    setState(() {
+      // Mettre à jour la notification en fonction du nombre de produits restants dans le panier
+      // Vous pouvez utiliser widget.cart.totalUniqueItems pour obtenir le nombre de produits uniques dans le panier
     });
   }
 
@@ -172,10 +191,6 @@ class _MainPageState extends State<MainPage> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(product.description),
                                 ),
-                                //Padding(
-                                 // padding: const EdgeInsets.all(8.0),
-                                 // child: Text('${product.price} dt'), // Ajout de l'unité monétaire
-                               // ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -237,8 +252,12 @@ class _MainPageState extends State<MainPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CartPage(cart: cart)),
-              );
+                MaterialPageRoute(builder: (context) => CartPage(cart: widget.cart)),
+              ).then((value) {
+                setState(() {
+                  _updateCartNotification();
+                });
+              });
             },
             child: Icon(Icons.shopping_cart),
             backgroundColor: Colors.teal,
@@ -249,7 +268,7 @@ class _MainPageState extends State<MainPage> {
               radius: 10,
               backgroundColor: Colors.red,
               child: Text(
-                '${cart.totalUniqueItems}',
+                '${widget.cart.totalUniqueItems}',
                 style: TextStyle(color: Colors.white, fontSize: 12),
               ),
             ),
