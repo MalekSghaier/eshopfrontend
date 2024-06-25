@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:eshopfrontend/product.dart';
 
 class ApiHandler {
-  final String baseUrl = "http://192.168.1.12:7028/api/products";
+  final String baseUrl = "http://192.168.1.244:7028/api/products";
   
   Future<List<Product>> fetchProducts(int pageNumber, int pageSize) async {
     try {
