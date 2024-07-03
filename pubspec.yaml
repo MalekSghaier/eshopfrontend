@@ -16,13 +16,22 @@ dependencies:
   shimmer: ^3.0.0
   image: ^4.2.0
   shared_preferences: ^2.2.3
-
-
+  flutter_local_notifications: ^17.1.2
+  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.13.1
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images.jpeg"
+  adaptive_icon_background: "assets/images.jpeg"
+  adaptive_icon_foreground : "assets/images.jpeg"
+
+
 
 flutter:
   uses-material-design: true

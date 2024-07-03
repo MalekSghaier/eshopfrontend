@@ -1,5 +1,6 @@
-import 'package:eshopfrontend/CartPage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:eshopfrontend/CartPage.dart';
 import 'package:eshopfrontend/cart.dart';
 import 'package:eshopfrontend/product.dart';
 import 'package:eshopfrontend/api_handler.dart';
@@ -14,7 +15,7 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   ApiHandler apiHandler = ApiHandler();
   List<Product> data = [];
   bool isLoading = false;
@@ -35,6 +36,7 @@ class _MainPageState extends State<MainPage> {
     getData();
     widget.cart.loadFromLocal();
     _updateCartNotification();
+    WidgetsBinding.instance?.addObserver(this);
   }
 
   @override
@@ -42,9 +44,13 @@ class _MainPageState extends State<MainPage> {
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     _searchController.dispose();
+    WidgetsBinding.instance?.removeObserver(this);
     super.dispose();
   }
 
+  
+
+ 
   void _scrollListener() {
     if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent && !isEndOfList) {
       getData();

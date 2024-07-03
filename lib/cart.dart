@@ -26,7 +26,6 @@ class CartItem {
     );
   }
 }
-
 class Cart {
   final List<CartItem> items = [];
 
@@ -79,5 +78,10 @@ class Cart {
       items.clear();
       items.addAll(jsonItems.map((jsonItem) => CartItem.fromJson(jsonDecode(jsonItem))).toList());
     }
+  }
+
+  void clear() {
+    items.clear();
+    saveToLocal();
   }
 }
